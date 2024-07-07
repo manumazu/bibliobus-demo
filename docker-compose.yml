@@ -1,0 +1,16 @@
+version: '3.6'
+
+services:  
+
+  app:
+    image: node:16
+    container_name: test-api
+    working_dir: /usr/app
+    volumes:
+      - ./app:/usr/app
+    ports:
+      - "127.0.0.1:3000:1234"
+    expose:
+      - "1234"      
+    command: >
+      bash -c "npm install && npm run dev"
