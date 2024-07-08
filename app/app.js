@@ -1,8 +1,8 @@
 import "regenerator-runtime/runtime";
-import axios from "axios";
+//import axios from "axios";
 
-//const BASE_URL = "http://127.0.0.1:8000";
-const BASE_URL = "https://api.bibliob.us";
+const BASE_URL = "http://127.0.0.1:8000";
+//const BASE_URL = "https://api.bibliob.us";
 
 const DeviceLogin = async (token) => {
   const request = await fetch(
@@ -36,30 +36,17 @@ const getDevice = async () => {
   return response;
 };
 
-const getBookshelf = async(access_token) => {
-  const request = await fetch(`${BASE_URL}/bookshelf`, {
-      headers: {
-        Accept: "application/json, text/plain, */*",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${access_token}`,
-      },
-  });
-  const response = await request.json();
-  //console.log(response)
-  return response;
-}
-
-const createDeviceElement = (item) => {
+const createDeviceElement = (device) => {
   const deviceElement = document.createElement("li");
   deviceElement.appendChild(
-    document.createTextNode(item.device.arduino_name + " / ID:" + item.device.id_ble + " ")
+    document.createTextNode(device.arduino_name + " / ID:" + device.id_ble + " ")
   );
   // add button to simulate BLE connexion
   const button = document.createElement('button');
   button.innerHTML = 'Connect to device';
   button.onclick = async function(){
     clearBookList()
-    const access_token = await DeviceLogin(item.device_token)
+    const access_token = await DeviceLogin(device.login.device_token)
     if(access_token) {
       updateBookList(await getBookshelf(access_token))
     }
@@ -76,6 +63,19 @@ const updateDeviceList = (deviceItems) => {
 const clearDeviceList = () => {
   const deviceList = document.getElementById("deviceList");
   deviceList.innerHTML = ''
+}
+
+const getBookshelf = async(access_token) => {
+  const request = await fetch(`${BASE_URL}/bookshelf`, {
+      headers: {
+        Accept: "application/json, text/plain, */*",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${access_token}`,
+      },
+  });
+  const response = await request.json();
+  //console.log(response)
+  return response;
 }
 
 const createBookList = (booksForShelf) => {
