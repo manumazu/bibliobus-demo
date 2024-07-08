@@ -1,8 +1,8 @@
 import "regenerator-runtime/runtime";
 import axios from "axios";
 
-const BASE_URL = "http://127.0.0.1:8000";
-//const BASE_URL = "https://api.bibliob.us";
+//const BASE_URL = "http://127.0.0.1:8000";
+const BASE_URL = "https://api.bibliob.us";
 
 const DeviceLogin = async (token) => {
   const request = await fetch(
@@ -28,7 +28,7 @@ const DeviceLogin = async (token) => {
 };
 
 const getDevice = async () => {
-  const request = await fetch(`${BASE_URL}/device-discover/YmlidXMtMDAwMi0wMzA5Mg==`, 
+  const request = await fetch(`${BASE_URL}/device-discover/YmlidXMtMDAwMy0wMzA0Nw==`, 
     {
       //headers: {"Referrer-Policy": "strict-origin-when-cross-origin"},
     })
@@ -37,7 +37,7 @@ const getDevice = async () => {
 };
 
 const getBookshelf = async(access_token) => {
-  const request = await fetch(`${BASE_URL}/bookshelf?numshelf=1`, {
+  const request = await fetch(`${BASE_URL}/bookshelf`, {
       headers: {
         Accept: "application/json, text/plain, */*",
         "Content-Type": "application/json",
@@ -69,15 +69,26 @@ const createDeviceElement = (item) => {
 };
 
 const updateDeviceList = (deviceItems) => {
-  const todoList = document.querySelector("ol");
+  const todoList = document.getElementById("deviceList");
   todoList.appendChild(createDeviceElement(deviceItems));
 };
 
 const clearDeviceList = () => {
-  const deviceList = document.querySelector("ol");
+  const deviceList = document.getElementById("deviceList");
   deviceList.innerHTML = ''
 }
 
+const createBookList = (booksForShelf) => {
+  const bookList = document.createElement("ul");
+    for (const led in booksForShelf) {
+      const book = booksForShelf[led][1]
+      if (book.item_type=='book') {
+        //console.log(book)
+        bookList.appendChild(createBookElement(book)); 
+      }
+  }
+  return bookList
+}
 
 const createBookElement = (book) => {
   const bookElement = document.createElement("li");
@@ -87,23 +98,32 @@ const createBookElement = (book) => {
   return bookElement;
 }
 
+const createShelfElement = (numshelf) => {
+  const shelfList = document.createElement("ul");
+  const shelfElement = document.createElement("li");
+  shelfElement.appendChild(
+    document.createTextNode(`shelf n°: ${numshelf}`)
+  );
+  shelfList.appendChild(shelfElement);
+  return shelfList;
+}
+
 const updateBookList = (bookshelf) => {
-  const bookList = document.querySelector("ul");
+  const bookShelfList = document.getElementById("bookShelf");
   for (const numshelf in bookshelf.stored_books) {
-    const shelf = bookshelf.stored_books[numshelf]
-    for (const led in shelf) {
-      const book = shelf[led][1]
-      if (book.item_type=='book') {
-        //console.log(book)
-        bookList.appendChild(createBookElement(book)); 
-      }
-    }
+    const booksForShelf = bookshelf.stored_books[numshelf]
+    // create list for shelves
+    const shelfList = createShelfElement(numshelf)
+    // create list for books in shelves
+    const bookList = createBookList(booksForShelf) 
+    shelfList.appendChild(bookList)
+    bookShelfList.appendChild(shelfList)
   }
 }
 
 const clearBookList = () => {
-  const bookList = document.querySelector("ul");
-  bookList.innerHTML = ''
+  const bookShelfList = document.getElementById("bookShelf");
+  bookShelfList.innerHTML = ''
 }
 
 const main = async () => {
