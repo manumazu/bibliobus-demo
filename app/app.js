@@ -1,12 +1,22 @@
 import "regenerator-runtime/runtime";
 //import axios from "axios";
 
-const BASE_URL = "http://127.0.0.1:8000";
-//const BASE_URL = "https://api.bibliob.us";
+//const BASE_URL = "http://127.0.0.1:8000";
+const BASE_URL = "https://api.bibliob.us";
+const uuid = "YmlidXMtMDAwMi0wMzA5Mg=="; //YmlidXMtMDAwMy0wMzA0Nw==
+
+const getDevice = async () => {
+  const request = await fetch(`${BASE_URL}/devices/discover/${uuid}`, 
+    {
+      //headers: {"Referrer-Policy": "strict-origin-when-cross-origin"},
+    })
+  const response = await request.json();
+  return response;
+};
 
 const DeviceLogin = async (token) => {
   const request = await fetch(
-    `${BASE_URL}/device-login?device_token=${token}`,
+    `${BASE_URL}/devices/login?device_token=${token}`,
     {
       body: "",
       method: "POST",
@@ -25,15 +35,6 @@ const DeviceLogin = async (token) => {
   }  
   const response = await request.json();
   return response.access_token;
-};
-
-const getDevice = async () => {
-  const request = await fetch(`${BASE_URL}/device-discover/YmlidXMtMDAwMy0wMzA0Nw==`, 
-    {
-      //headers: {"Referrer-Policy": "strict-origin-when-cross-origin"},
-    })
-  const response = await request.json();
-  return response;
 };
 
 const createDeviceElement = (device) => {
@@ -66,7 +67,7 @@ const clearDeviceList = () => {
 }
 
 const getBookshelf = async(access_token) => {
-  const request = await fetch(`${BASE_URL}/bookshelf`, {
+  const request = await fetch(`${BASE_URL}/books/shelf`, {
       headers: {
         Accept: "application/json, text/plain, */*",
         "Content-Type": "application/json",
