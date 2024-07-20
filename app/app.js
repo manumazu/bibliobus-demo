@@ -1,15 +1,19 @@
 import "regenerator-runtime/runtime";
 //import axios from "axios";
 
-//const BASE_URL = "http://127.0.0.1:8000";
-const BASE_URL = "https://api.bibliob.us";
-const uuid = "YmlidXMtMDAwMi0wMzA5Mg=="; //YmlidXMtMDAwMy0wMzA0Nw==
+const BASE_URL = "http://127.0.0.1:8000";
+//const BASE_URL = "https://api.bibliob.us";
+const uuid = "YmlidXMtMDAwMi0wMzA5Mg==";
+//Demo YmlidXMtMDAwMi0wMzA5Mg== 
+//BT YmlidXMtMDAwMy0wMzA0Nw==
+//B1 YmlidXMwMDAx
 
 const getDevice = async () => {
   const request = await fetch(`${BASE_URL}/devices/discover/${uuid}`, 
     {
       //headers: {"Referrer-Policy": "strict-origin-when-cross-origin"},
     })
+  console.log('uuid', uuid)
   const response = await request.json();
   return response;
 };
@@ -34,6 +38,8 @@ const DeviceLogin = async (token) => {
     //throw new Error(`Response status: ${request.status}`);
   }  
   const response = await request.json();
+  console.log('device_token', token)
+  console.log(response.access_token)
   return response.access_token;
 };
 
@@ -81,12 +87,11 @@ const getBookshelf = async(access_token) => {
 
 const createBookList = (booksForShelf) => {
   const bookList = document.createElement("ul");
-    for (const led in booksForShelf) {
-      const book = booksForShelf[led][1]
-      if (book.item_type=='book') {
-        //console.log(book)
-        bookList.appendChild(createBookElement(book)); 
-      }
+    for (const i in booksForShelf) {
+      //console.log('books', booksForShelf[i])
+      const led_column = booksForShelf[i].led_column
+      const book = booksForShelf[i].book
+      bookList.appendChild(createBookElement(book)); 
   }
   return bookList
 }
@@ -111,8 +116,9 @@ const createShelfElement = (numshelf) => {
 
 const updateBookList = (bookshelf) => {
   const bookShelfList = document.getElementById("bookShelf");
-  for (const numshelf in bookshelf.stored_books) {
-    const booksForShelf = bookshelf.stored_books[numshelf]
+  for (const i in bookshelf.books) {
+    const numshelf = bookshelf.books[i].numshelf
+    const booksForShelf = bookshelf.books[i].items
     // create list for shelves
     const shelfList = createShelfElement(numshelf)
     // create list for books in shelves
